@@ -15,12 +15,17 @@ import java.util.Collections;
  */
 public class AdminSchedulePanel extends JPanel implements Observer {
 
-    private Gui gui;
-    private JTextField scheduleNameField;
-    private JTextArea scheduleList;
+    private final Gui gui;
+    private final JTextField scheduleNameField;
+    private final JTextField sourceField;
+    private final JTextField destinationField;
+    private final JTextField dateField;
+    private final JTextField capacityField;
+    private final JComboBox<String> scheduleTypeComboBox;
+
     // It's better to use a JTable with its model for dynamic data.
-    private ScheduleTableModel scheduleTableModel;
-    private JTable scheduleTable;
+    private final ScheduleTableModel scheduleTableModel;
+    private final JTable scheduleTable;
 
 
     /**
@@ -33,10 +38,8 @@ public class AdminSchedulePanel extends JPanel implements Observer {
         // Initialize the model that holds the schedule data
         this.scheduleTableModel = new ScheduleTableModel();
         // The View (this panel) registers itself as an Observer of the Model.
-        // You will need to make your ScheduleTableModel an Observable (Subject)
-        // and add a method like `addObserver(Observer o)`.
-        // this.scheduleTableModel.addObserver(this);
-
+        // The Controller now manages adding the AdminSchedulePanel as an observer
+        // to the ScheduleManager (Model) when the app starts.
 
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -58,14 +61,55 @@ public class AdminSchedulePanel extends JPanel implements Observer {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        // Schedule Type Dropdown
         gbc.gridx = 0;
         gbc.gridy = 0;
-        controlsPanel.add(new JLabel("Voyage Name:"), gbc);
+        controlsPanel.add(new JLabel("Schedule Type:"), gbc);
+        gbc.gridx = 1;
+        scheduleTypeComboBox = new JComboBox<>(new String[]{"Plane", "Bus"});
+        controlsPanel.add(scheduleTypeComboBox, gbc);
 
+        // Voyage Name/Seat Field
+        gbc.gridx = 0;
+        gbc.gridy++;
+        controlsPanel.add(new JLabel("Voyage Name (Seat):"), gbc);
         gbc.gridx = 1;
         scheduleNameField = new JTextField(20);
         controlsPanel.add(scheduleNameField, gbc);
 
+        // Source Field
+        gbc.gridx = 0;
+        gbc.gridy++;
+        controlsPanel.add(new JLabel("Source:"), gbc);
+        gbc.gridx = 1;
+        sourceField = new JTextField(20);
+        controlsPanel.add(sourceField, gbc);
+
+        // Destination Field
+        gbc.gridx = 0;
+        gbc.gridy++;
+        controlsPanel.add(new JLabel("Destination:"), gbc);
+        gbc.gridx = 1;
+        destinationField = new JTextField(20);
+        controlsPanel.add(destinationField, gbc);
+
+        // Date Field
+        gbc.gridx = 0;
+        gbc.gridy++;
+        controlsPanel.add(new JLabel("Date (DD-MM-YYYY):"), gbc);
+        gbc.gridx = 1;
+        dateField = new JTextField(20);
+        controlsPanel.add(dateField, gbc);
+
+        // Capacity Field
+        gbc.gridx = 0;
+        gbc.gridy++;
+        controlsPanel.add(new JLabel("Capacity:"), gbc);
+        gbc.gridx = 1;
+        capacityField = new JTextField(20);
+        controlsPanel.add(capacityField, gbc);
+
+        // Add Schedule Button
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -73,32 +117,45 @@ public class AdminSchedulePanel extends JPanel implements Observer {
 
         // Implemented ActionListener to add a new voyage
         ActionListener addScheduleAction = e -> {
+            String scheduleType = (String) scheduleTypeComboBox.getSelectedItem();
             String scheduleName = scheduleNameField.getText();
-            // Assumes a getter on the Gui object for the controller
+            String source = sourceField.getText();
+            String destination = destinationField.getText();
+            String date = dateField.getText();
+            int capacity = 0;
+            try {
+                capacity = Integer.parseInt(capacityField.getText());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid number for capacity.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             Controller controller = gui.getController();
-            if (controller != null && !scheduleName.isBlank()) {
-                // The controller should update the model.
-                // The model will then notify observers (like this panel).
-                controller.addSchedule(scheduleName);
-                scheduleNameField.setText(""); // Clear the text field after adding
+            if (controller != null) {
+                controller.addSchedule(scheduleType, scheduleName, source, destination, date, capacity);
+                // Clear fields after adding
+                scheduleNameField.setText("");
+                sourceField.setText("");
+                destinationField.setText("");
+                dateField.setText("");
+                capacityField.setText("");
             }
         };
         addScheduleButton.addActionListener(addScheduleAction);
         controlsPanel.add(addScheduleButton, gbc);
 
+        // Delete Schedule Button
         gbc.gridy++;
         JButton deleteVoyageButton = new JButton("Delete Selected Voyage");
         // ActionListener to delete the selected voyage from the JTable
         deleteVoyageButton.addActionListener(e -> {
             int selectedRow = scheduleTable.getSelectedRow();
             if (selectedRow >= 0) {
-                // You would typically get an ID or the name from the selected row
-                // For this example, let's assume the first column is the schedule name
-                String scheduleNameToDelete = (String) scheduleTableModel.getValueAt(selectedRow, 0);
+                // Get the ID from the ScheduleTableModel using the selected row index
+                String scheduleIdToDelete = scheduleTableModel.getScheduleIdAt(selectedRow);
                 Controller controller = gui.getController();
-                if (controller != null) {
-                    // The controller updates the model, which notifies observers
-                    controller.deleteSchedule(scheduleNameToDelete);
+                if (controller != null && scheduleIdToDelete != null) {
+                    controller.deleteSchedule(scheduleIdToDelete);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a voyage to delete.", "No Voyage Selected", JOptionPane.WARNING_MESSAGE);

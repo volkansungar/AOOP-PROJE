@@ -1,36 +1,25 @@
 package Schedule;
 
-/**
- * Corrected implementation of the Schedule interface for a Plane.
- * The getter and setter methods have been properly implemented to store and retrieve data.
- */
 public class PlaneSchedule implements Schedule {
-    // Private fields to hold the schedule's data.
-    private String id; // It's good practice to have a unique ID.
-    private String seat; // This will store the voyage name as per the logic in UserController.
+    private String id;
+    private String seat;
     private String destination;
     private String date;
     private String source;
     private int capacity;
+    private int reserved_seats = 0;
 
-    // A simple constructor could be useful.
-     PlaneSchedule() {
-        // You could initialize default values here if needed.
-        // For example, generate a unique ID.
+    public PlaneSchedule() {
         this.id = java.util.UUID.randomUUID().toString();
     }
 
-
     @Override
     public String seferSorgula() {
-        // This method's implementation depends on its purpose.
-        // For now, it can return a summary.
-        return "Voyage: " + seat + " from " + source + " to " + destination;
+        return "Plane Voyage: " + seat + " from " + source + " to " + destination + " on " + date + " (Capacity: " + capacity + ")";
     }
 
     @Override
     public void set_id() {
-        // The ID is set in the constructor, but you could provide a manual override if needed.
         this.id = java.util.UUID.randomUUID().toString();
     }
 
@@ -41,13 +30,11 @@ public class PlaneSchedule implements Schedule {
 
     @Override
     public void set_seat(String seat) {
-        // Set the instance's 'seat' variable to the value passed in.
         this.seat = seat;
     }
 
     @Override
     public String get_seat() {
-        // Return the stored 'seat' value.
         return this.seat;
     }
 
@@ -89,5 +76,20 @@ public class PlaneSchedule implements Schedule {
     @Override
     public String get_source() {
         return this.source;
+    }
+
+    @Override
+    public String getType() {
+        return "Plane";
+    }
+
+    @Override
+    public int getReservedSeats() {
+        return reserved_seats;
+    }
+
+    @Override
+    public void setReservedSeats(int reserved_seats) {
+        this.reserved_seats = reserved_seats;
     }
 }

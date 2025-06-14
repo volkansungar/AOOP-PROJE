@@ -50,9 +50,9 @@ public class ScheduleManager implements Subject {
     // ... other methods like removeVoyage would also call notifyObservers()
     public Schedule lookupSchedule(String id) {
         for (Schedule schedule : schedules) {
-            if (schedule.get_id() == id) return schedule;
+            // FIX: Use .equals() for string comparison instead of ==
+            if (schedule.get_id() != null && schedule.get_id().equals(id)) return schedule;
         }
         return null;
     }
 }
-

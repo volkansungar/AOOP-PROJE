@@ -1,6 +1,7 @@
 import Schedule.BusFactory;
 import Schedule.PlaneFactory;
 import mvc.controller.Controller;
+import mvc.model.ReservationManager;
 import mvc.model.UserModel;
 import mvc.view.UserView;
 import mvc.view.Gui;
@@ -27,10 +28,11 @@ public class Main {
             UserView view = new UserView(gui);
 
             ScheduleManager scheduleManager = new ScheduleManager();
+            ReservationManager reservationManager = new ReservationManager();
             PlaneFactory planeFactory = new PlaneFactory();
             BusFactory busFactory = new BusFactory();
             // Create the controller, which handles user input and updates the model and view.
-            Controller controller = new Controller(model, scheduleManager, view, busFactory, planeFactory);
+            Controller controller = new Controller(model, scheduleManager, reservationManager, view, busFactory, planeFactory);
 
             // Set the controller in the GUI so that UI events can be passed to it.
             gui.setController(controller);
