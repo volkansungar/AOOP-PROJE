@@ -35,7 +35,12 @@ public class ScheduleManager implements Subject {
     // Modify methods that change the state to notify observers
     public void addSchedule(Schedule schedule) {
         this.schedules.add(schedule);
-        System.out.println("Voyage added. Notifying observers...");
+        System.out.println("Schedule added. Notifying observers...");
+        notifyObservers(); // Notify that the data has changed
+    }
+    public void deleteSchedule(Schedule schedule) {
+        this.schedules.remove(schedule);
+        System.out.println("Schedule deleted. Notifying observers...");
         notifyObservers(); // Notify that the data has changed
     }
 
@@ -43,4 +48,11 @@ public class ScheduleManager implements Subject {
         return this.schedules;
     }
     // ... other methods like removeVoyage would also call notifyObservers()
+    public Schedule lookupSchedule(String id) {
+        for (Schedule schedule : schedules) {
+            if (schedule.get_id() == id) return schedule;
+        }
+        return null;
+    }
 }
+

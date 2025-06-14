@@ -1,5 +1,5 @@
 package mvc.view;
-import mvc.controller.UserController;
+import mvc.controller.Controller;
 import javax.swing.*;
 import java.awt.*;
 
@@ -23,7 +23,7 @@ public class Gui {
     private ReservationPanel reservationPanel;
 
 
-    private UserController controller;
+    private Controller controller;
 
     // Constants for panel names to be used with CardLayout.
     public static final String LOGIN_PANEL = "LoginPanel";
@@ -38,7 +38,8 @@ public class Gui {
 
     /**
      * Constructor for the Gui.
-     * Initializes the main frame and sets up the CardLayout to manage different views.
+     * Initializes the main frame and CardLayout. Panel initialization is deferred
+     * to the initComponents() method.
      */
     public Gui() {
         // Initialize the main frame
@@ -51,6 +52,15 @@ public class Gui {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
+        // Add the main panel to the frame's content pane
+        frame.getContentPane().add(mainPanel);
+    }
+
+    /**
+     * Initializes all the panels that depend on the controller.
+     * This method should be called after the controller has been set.
+     */
+    public void initComponents() {
         // Initialize the different pages (panels) of the application
         loginPage = new LoginPage(this);
         registerPage = new RegisterPage(this);
@@ -60,6 +70,10 @@ public class Gui {
         scheduleListPanel = new ScheduleListPanel(this);
         reservationPanel = new ReservationPanel(this);
 
+        // Now that the controller exists, it's safe to add observers
+        controller.addObserver(adminSchedulePanel);
+        controller.addObserver(scheduleListPanel);
+
         // Add panels to the main panel with their respective names
         mainPanel.add(loginPage, LOGIN_PANEL);
         mainPanel.add(registerPage, REGISTER_PANEL);
@@ -68,16 +82,14 @@ public class Gui {
         mainPanel.add(adminSchedulePanel, ADMIN_SCHEDULE_PANEL);
         mainPanel.add(scheduleListPanel, SCHEDULE_LIST_PANEL);
         mainPanel.add(reservationPanel, RESERVATION_PANEL);
-
-        // Add the main panel to the frame's content pane
-        frame.getContentPane().add(mainPanel);
     }
+
 
     /**
      * Sets the controller for the GUI. The controller handles the application's logic.
      * @param controller The UserController instance.
      */
-    public void setController(UserController controller) {
+    public void setController(Controller controller) {
         this.controller = controller;
     }
 
@@ -85,7 +97,7 @@ public class Gui {
      * Returns the controller associated with this GUI.
      * @return The UserController instance.
      */
-    public UserController getController() {
+    public Controller getController() {
         return controller;
     }
 
@@ -96,6 +108,10 @@ public class Gui {
      */
     public ScheduleListPanel getScheduleListPanel() {
         return scheduleListPanel;
+    }
+
+    public AdminSchedulePanel getAdminSchedulePanel() {
+        return adminSchedulePanel;
     }
 
     /**

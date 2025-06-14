@@ -1,4 +1,6 @@
-import mvc.controller.UserController;
+import Schedule.BusFactory;
+import Schedule.PlaneFactory;
+import mvc.controller.Controller;
 import mvc.model.UserModel;
 import mvc.view.UserView;
 import mvc.view.Gui;
@@ -15,7 +17,7 @@ public class Main {
         // executed on the Event Dispatch Thread (EDT). This is the standard and safe
         // way to start a Swing application.
         SwingUtilities.invokeLater(() -> {
-            // Create the main GUI window.
+            // Create the main GUI window. Its components are not initialized yet.
             Gui gui = new Gui();
 
             // Create the model, which holds the application's data.
@@ -25,21 +27,21 @@ public class Main {
             UserView view = new UserView(gui);
 
             ScheduleManager scheduleManager = new ScheduleManager();
+            PlaneFactory planeFactory = new PlaneFactory();
+            BusFactory busFactory = new BusFactory();
             // Create the controller, which handles user input and updates the model and view.
-            UserController controller = new UserController(model, scheduleManager, view);
+            Controller controller = new Controller(model, scheduleManager, view, busFactory, planeFactory);
 
             // Set the controller in the GUI so that UI events can be passed to it.
             gui.setController(controller);
-            // *** THE CRITICAL CONNECTION STEP ***
-            // Tell the VoyageManager that VoyageListPanel wants to be notified of changes.
-            scheduleManager.addObserver(gui.getScheduleListPanel());
-            // You would also register AdminVoyagePanel if it needs updates
-            // voyageManager.addObserver(gui.getAdminVoyagePanel());
+
+            // *** FIX: Initialize the GUI components now that the controller is available. ***
+            gui.initComponents();
 
             // Start the application logic by showing the initial login page.
             controller.startApplication();
 
-            // *** FIX: Make the main window visible after all components are initialized. ***
+            // Make the main window visible after all components are initialized.
             gui.showFrame();
         });
     }
