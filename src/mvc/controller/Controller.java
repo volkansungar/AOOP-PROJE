@@ -8,6 +8,9 @@ import mvc.model.ReservationManager;
 import mvc.model.ScheduleManager;
 import mvc.model.User;
 import mvc.model.UserModel;
+import mvc.model.pricing.DynamicPricingStrategy;
+import mvc.patterns.PricingStrategy;
+import mvc.model.pricing.StandardPricingStrategy;
 import mvc.patterns.Observer;
 import mvc.view.UserView;
 
@@ -21,7 +24,6 @@ public class Controller {
     private BusFactory busFactory;
     private PlaneFactory planeFactory;
     private User currentUser;
-
     public Controller(UserModel userModel, ScheduleManager scheduleManager, ReservationManager reservationManager, UserView view, BusFactory busFactory, PlaneFactory planeFactory) {
         this.userModel = userModel;
         this.scheduleManager = scheduleManager;
@@ -44,7 +46,7 @@ public class Controller {
         User user = userModel.searchUser(name);
         if (user != null) {
             if (password.equals(user.getPassword())) {
-                this.currentUser = user; // Set current user on successful login
+                this.currentUser = user;
                 if (user.checkAdmin()) {
                     view.showAdminPanel();
                 } else {
@@ -77,7 +79,7 @@ public class Controller {
     }
 
     public void logOut() {
-        this.currentUser = null; // Clear current user on logout
+        this.currentUser = null;
         view.showLoginPage();
     }
 
@@ -105,14 +107,13 @@ public class Controller {
             return;
         }
 
-        newSchedule.set_seat(name);
+        newSchedule.set_name(name);
         newSchedule.set_source(source);
         newSchedule.set_destination(destination);
         newSchedule.set_date(date);
         newSchedule.set_capacity(capacity);
 
         scheduleManager.addSchedule(newSchedule);
-
         view.popup(scheduleType + " Schedule '" + name + "' added successfully!", false);
     }
 
@@ -120,13 +121,13 @@ public class Controller {
         Schedule schedule = scheduleManager.lookupSchedule(id);
         if(schedule != null) {
             scheduleManager.deleteSchedule(schedule);
-            view.popup("Schedule '" + schedule.get_seat() + "' (ID: " + id + ") deleted successfully!", false);
+            view.popup("Schedule '" + schedule.get_name() + "' (ID: " + id + ") deleted successfully!", false);
         } else {
             view.popup("Schedule with ID '" + id + "' not found.", true);
         }
     }
 
-    public void makeReservation(String scheduleId) {
+    public void makeReservation(String scheduleId, int seatNumber) {
         if (currentUser == null) {
             view.popup("You must be logged in to make a reservation.", true);
             return;
@@ -138,27 +139,35 @@ public class Controller {
             return;
         }
 
-        int reservedCount = reservationManager.getReservationCountForSchedule(scheduleId);
-        if (reservedCount >= schedule.get_capacity()) {
-            view.popup("This schedule is full.", true);
+        if (reservationManager.getReservedSeatNumbers(scheduleId).contains(seatNumber)) {
+            view.popup("Seat " + seatNumber + " is already taken.", true);
             return;
         }
 
-        String scheduleDetails = schedule.getType() + ": " + schedule.get_seat() + " from " + schedule.get_source() + " to " + schedule.get_destination();
-        Reservation newReservation = new Reservation(currentUser.getUserId(), scheduleId, scheduleDetails);
+        // --- Strategy Pattern Implementation ---
+        PricingStrategy pricingStrategy;
+        // Decide which strategy to use. For example, use dynamic pricing if the plane/bus is more than 50% full.
+        if ((double) schedule.getReservedSeats() / schedule.get_capacity() > 0.5) {
+            pricingStrategy = new DynamicPricingStrategy();
+        } else {
+            pricingStrategy = new StandardPricingStrategy();
+        }
+        double price = pricingStrategy.calculatePrice(schedule);
+        // --- End of Strategy Pattern Implementation ---
+
+        String scheduleDetails = schedule.getType() + ": " + schedule.get_name() + " from " + schedule.get_source() + " to " + schedule.get_destination();
+        Reservation newReservation = new Reservation(currentUser.getUserId(), scheduleId, seatNumber, scheduleDetails, price); // Pass price to constructor
         reservationManager.addReservation(newReservation);
 
-        // After making a reservation, we must notify the schedule observers so the table updates
         scheduleManager.notifyObservers();
 
-        view.popup("Reservation successful!", false);
+        view.popup("Reservation for seat " + seatNumber + " successful! Price: " + String.format("%.2f", price), false);
     }
 
     public void cancelReservation(String reservationId) {
         Reservation reservation = reservationManager.findReservationById(reservationId);
         if (reservation != null) {
             reservationManager.cancelReservation(reservationId);
-            // After cancelling a reservation, also notify schedule observers to update counts
             scheduleManager.notifyObservers();
             view.popup("Reservation cancelled successfully.", false);
         } else {
@@ -166,6 +175,9 @@ public class Controller {
         }
     }
 
+    public List<Integer> getReservedSeatsForSchedule(String scheduleId) {
+        return reservationManager.getReservedSeatNumbers(scheduleId);
+    }
 
     public void goto_adminAddDeleteSchedules() {
         view.showAdminSchedulePanel();
@@ -183,13 +195,14 @@ public class Controller {
         view.showScheduleListPanel(false);
     }
 
+
+
     public void userCreateCancelReservations() {
         view.showReservationPanel();
     }
 
     public List<Schedule> getSchedules() {
         List<Schedule> allSchedules = scheduleManager.getAllSchedules();
-        // Update the reserved seat count for each schedule before returning
         for (Schedule schedule : allSchedules) {
             int reservedCount = reservationManager.getReservationCountForSchedule(schedule.get_id());
             schedule.setReservedSeats(reservedCount);
@@ -201,7 +214,7 @@ public class Controller {
         if (currentUser != null) {
             return reservationManager.getReservationsForUser(currentUser.getUserId());
         }
-        return List.of(); // Return empty list if no user is logged in
+        return List.of();
     }
 
     public void addScheduleObserver(Observer o) {

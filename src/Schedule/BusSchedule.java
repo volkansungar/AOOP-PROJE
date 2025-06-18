@@ -2,7 +2,7 @@ package Schedule;
 
 public class BusSchedule implements Schedule {
     private String id;
-    private String seat; // Renamed from koltuk_no for consistency with Schedule interface
+    private String name;
     private String destination;
     private String date;
     private String source;
@@ -15,7 +15,7 @@ public class BusSchedule implements Schedule {
 
     @Override
     public String seferSorgula() {
-        return "Bus Voyage: " + seat + " from " + source + " to " + destination + " on " + date + " (Capacity: " + capacity + ")";
+        return "Bus Schedule: " + name + " from " + source + " to " + destination + " on " + date + " (Capacity: " + capacity + ")";
     }
 
     @Override
@@ -29,13 +29,13 @@ public class BusSchedule implements Schedule {
     }
 
     @Override
-    public void set_seat(String seat) {
-        this.seat = seat;
+    public void set_name(String seat) {
+        this.name = name;
     }
 
     @Override
-    public String get_seat() {
-        return this.seat;
+    public String get_name() {
+        return this.name;
     }
 
     @Override

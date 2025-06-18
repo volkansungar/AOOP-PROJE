@@ -4,8 +4,8 @@ public interface Schedule {
     String seferSorgula();
     void set_id();
     String get_id();
-    void set_seat(String koltuk_no);
-    String get_seat();
+    void set_name(String name);
+    String get_name();
     void set_destination(String destination);
     String get_destination();
     void set_date(String date);

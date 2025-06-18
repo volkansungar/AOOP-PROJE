@@ -1,5 +1,9 @@
 package mvc.model;
 
+/*
+ * The user object that will be created to be stored in usermodel
+ * Each user has its own privileges. Login page will redirect accordingly
+ */
 public class User {
     private String userId;
     private String name;

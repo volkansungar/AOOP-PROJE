@@ -5,7 +5,7 @@ import Schedule.Schedule;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-
+/* Implemented for seat availability */
 public class AvailabilityRenderer extends JProgressBar implements TableCellRenderer {
 
     public AvailabilityRenderer() {

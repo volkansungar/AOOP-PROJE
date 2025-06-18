@@ -9,7 +9,7 @@ import java.util.List;
 public class ScheduleTableModel extends AbstractTableModel {
 
     private List<Schedule> schedules;
-    private final String[] columnNames = {"ID", "Type", "Name/Seat", "Source", "Destination", "Date", "Availability"};
+    private final String[] columnNames = {"ID", "Type", "Name", "Source", "Destination", "Date", "Availability"};
 
     public ScheduleTableModel() {
         this.schedules = new ArrayList<>();
@@ -53,7 +53,7 @@ public class ScheduleTableModel extends AbstractTableModel {
         switch (columnIndex) {
             case 0: return schedule.get_id();
             case 1: return schedule.getType();
-            case 2: return schedule.get_seat();
+            case 2: return schedule.get_name();
             case 3: return schedule.get_source();
             case 4: return schedule.get_destination();
             case 5: return schedule.get_date();

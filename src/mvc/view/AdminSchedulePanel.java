@@ -69,10 +69,10 @@ public class AdminSchedulePanel extends JPanel implements Observer {
         scheduleTypeComboBox = new JComboBox<>(new String[]{"Plane", "Bus"});
         controlsPanel.add(scheduleTypeComboBox, gbc);
 
-        // Voyage Name/Seat Field
+        // Schedule Name Field
         gbc.gridx = 0;
         gbc.gridy++;
-        controlsPanel.add(new JLabel("Voyage Name (Seat):"), gbc);
+        controlsPanel.add(new JLabel("Schedule Name:"), gbc);
         gbc.gridx = 1;
         scheduleNameField = new JTextField(20);
         controlsPanel.add(scheduleNameField, gbc);

@@ -23,7 +23,6 @@ public class UserPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, BorderLayout.NORTH);
 
-        // This is where you would add components for user functionalities
         JPanel userFunctions = new JPanel(new GridLayout(2, 1, 10, 10));
         userFunctions.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 

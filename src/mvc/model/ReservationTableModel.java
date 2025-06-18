@@ -7,7 +7,7 @@ import java.util.List;
 public class ReservationTableModel extends AbstractTableModel {
 
     private List<Reservation> reservations;
-    private final String[] columnNames = {"Reservation ID", "Schedule Details"};
+    private final String[] columnNames = {"Reservation ID", "Schedule Details", "Seat Number", "Price"};
 
     public ReservationTableModel() {
         this.reservations = new ArrayList<>();
@@ -41,6 +41,10 @@ public class ReservationTableModel extends AbstractTableModel {
                 return reservation.getReservationId();
             case 1:
                 return reservation.getScheduleDetails();
+            case 2:
+                return reservation.getSeatNumber();
+            case 3:
+                return String.format("%.2f", reservation.getPrice());
             default:
                 return null;
         }
