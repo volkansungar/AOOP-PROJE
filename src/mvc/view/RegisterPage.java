@@ -4,70 +4,69 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-/**
- * The registration page for the application.
- * Allows new users to create an account.
- */
 public class RegisterPage extends JPanel {
 
-    private Gui gui;
-    private JTextField nameField;
-    private JPasswordField passField;
-    private JPasswordField passRepeatField;
+    private final Gui gui;
+    private final JTextField nameField;
+    private final JPasswordField passField;
+    private final JPasswordField passRepeatField;
 
-    /**
-     * Constructor for the RegisterPage.
-     * @param gui The main GUI controller.
-     */
     public RegisterPage(Gui gui) {
         this.gui = gui;
         setLayout(new GridBagLayout());
-        setBackground(new Color(245, 245, 245));
+        setBackground(ViewUtilities.BACKGROUND_COLOR);
+
+        JPanel formPanel = ViewUtilities.createStyledPanel();
+        formPanel.setLayout(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ViewUtilities.BORDER_COLOR, 1, true),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        JLabel titleLabel = new JLabel("Register");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        add(titleLabel, gbc);
+        formPanel.add(ViewUtilities.createTitleLabel("Register"), gbc);
 
         gbc.gridwidth = 1;
         gbc.gridy++;
-        gbc.gridx = 0;
-        add(new JLabel("Username:"), gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        formPanel.add(ViewUtilities.createLabel("Username:"), gbc);
 
         gbc.gridx = 1;
         nameField = new JTextField(20);
-        add(nameField, gbc);
+        nameField.setFont(ViewUtilities.MAIN_FONT);
+        formPanel.add(nameField, gbc);
 
         gbc.gridy++;
         gbc.gridx = 0;
-        add(new JLabel("Password:"), gbc);
+        formPanel.add(ViewUtilities.createLabel("Password:"), gbc);
 
         gbc.gridx = 1;
         passField = new JPasswordField(20);
-        add(passField, gbc);
+        passField.setFont(ViewUtilities.MAIN_FONT);
+        formPanel.add(passField, gbc);
 
         gbc.gridy++;
         gbc.gridx = 0;
-        add(new JLabel("Repeat Password:"), gbc);
+        formPanel.add(ViewUtilities.createLabel("Repeat Password:"), gbc);
 
         gbc.gridx = 1;
         passRepeatField = new JPasswordField(20);
-        add(passRepeatField, gbc);
+        passRepeatField.setFont(ViewUtilities.MAIN_FONT);
+        formPanel.add(passRepeatField, gbc);
 
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JButton registerButton = new JButton("Register");
+        JButton registerButton = ViewUtilities.createStyledButton("Register");
 
-        // Create a single ActionListener for the registration action.
-        // This can be triggered by the button or by pressing Enter in the final password field.
         ActionListener registerAction = e -> {
             String name = nameField.getText();
             String password = new String(passField.getPassword());
@@ -77,15 +76,21 @@ public class RegisterPage extends JPanel {
             }
         };
 
-        // Add the action listener to both the button and the final password field.
         registerButton.addActionListener(registerAction);
         passRepeatField.addActionListener(registerAction);
-
-        add(registerButton, gbc);
+        formPanel.add(registerButton, gbc);
 
         gbc.gridy++;
         JButton returnButton = new JButton("Back to Login");
+        returnButton.setFont(ViewUtilities.MAIN_FONT);
+        returnButton.setForeground(ViewUtilities.PRIMARY_COLOR);
+        returnButton.setBorderPainted(false);
+        returnButton.setContentAreaFilled(false);
+        returnButton.setFocusPainted(false);
+        returnButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         returnButton.addActionListener(e -> gui.showPanel(Gui.LOGIN_PANEL));
-        add(returnButton, gbc);
+        formPanel.add(returnButton, gbc);
+
+        add(formPanel);
     }
 }

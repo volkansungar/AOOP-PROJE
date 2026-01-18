@@ -37,6 +37,11 @@ public class Controller {
         return currentUser;
     }
 
+    /*
+     * Called when login button is pressed
+     * Checks if user exists with searchUser()
+     * Retrieves panel according to user privileges
+     */
     public void tryLogin(String name, String password) {
         if (name.trim().isEmpty() || password.trim().isEmpty()) {
             view.popup("Username and password cannot be empty.", true);
@@ -60,6 +65,10 @@ public class Controller {
         }
     }
 
+    /*
+     * Called when register button is pressed
+     * Checks if input is valid then creates a user to add to model
+     */
     public void tryRegister(String name, String password, String pass_repeat) {
         if (name.trim().isEmpty() || password.trim().isEmpty()) {
             view.popup("Username and password cannot be empty.", true);
@@ -87,6 +96,10 @@ public class Controller {
         view.showLoginPage();
     }
 
+    /*
+     * Factory method is used here
+     * Creates Schedule objects from Factory then add them to the model ScheduleManager
+     */
     public void addSchedule(String scheduleType, String name, String source, String destination, String date, int capacity) {
         if (name == null || name.trim().isEmpty() || source.trim().isEmpty() || destination.trim().isEmpty() || date.trim().isEmpty()) {
             view.popup("Schedule name, source, destination, and date cannot be empty.", true);
@@ -127,6 +140,11 @@ public class Controller {
         }
     }
 
+    /*
+     * Strategy Pattern is used here
+     * Checks if schedule exists then creates a reservation object then stores it in model
+     * Price is only shown as a pop-up for now
+     */
     public void makeReservation(String scheduleId, int seatNumber) {
         if (currentUser == null) {
             view.popup("You must be logged in to make a reservation.", true);
@@ -191,7 +209,8 @@ public class Controller {
         view.popup("Admin: View All Reservations - Not implemented yet.", false);
     }
 
-    public void userListQueryVoyages() {
+    // Called when List Schedule is pressed from the UserPanel
+    public void userListQuerySchedules() {
         view.showScheduleListPanel(false);
     }
 

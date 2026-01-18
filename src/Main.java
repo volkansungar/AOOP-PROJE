@@ -14,9 +14,7 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
     public static void main(String[] args) {
-        // Use SwingUtilities.invokeLater to ensure that all GUI-related tasks are
-        // executed on the Event Dispatch Thread (EDT). This is the standard and safe
-        // way to start a Swing application.
+
         SwingUtilities.invokeLater(() -> {
             // Create the main GUI window. Its components are not initialized yet.
             Gui gui = new Gui();
@@ -37,7 +35,7 @@ public class Main {
             // Set the controller in the GUI so that UI events can be passed to it.
             gui.setController(controller);
 
-            // *** FIX: Initialize the GUI components now that the controller is available. ***
+            // Initialize the GUI components now that the controller is available.
             gui.initComponents();
 
             // Start the application logic by showing the initial login page.
