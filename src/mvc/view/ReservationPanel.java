@@ -18,19 +18,22 @@ public class ReservationPanel extends JPanel implements Observer {
         this.reservationTableModel = new ReservationTableModel();
 
         setLayout(new BorderLayout(10, 10));
+        setBackground(ViewUtilities.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel titleLabel = new JLabel("My Reservations", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, BorderLayout.NORTH);
+        add(ViewUtilities.createTitleLabel("My Reservations"), BorderLayout.NORTH);
 
         reservationTable = new JTable(reservationTableModel);
+        reservationTable.setFont(ViewUtilities.MAIN_FONT);
+        reservationTable.getTableHeader().setFont(ViewUtilities.BOLD_FONT);
         add(new JScrollPane(reservationTable), BorderLayout.CENTER);
 
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
+        controlsPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
 
-        JButton cancelReservationButton = new JButton("Cancel Selected Reservation");
+        JButton cancelReservationButton = ViewUtilities.createStyledButton("Cancel Selected Reservation");
+        cancelReservationButton.setBackground(new Color(0xEF4444));
         cancelReservationButton.addActionListener(e -> {
             int selectedRow = reservationTable.getSelectedRow();
             if (selectedRow >= 0) {
@@ -45,10 +48,16 @@ public class ReservationPanel extends JPanel implements Observer {
         });
 
         controlsPanel.add(cancelReservationButton);
-        add(controlsPanel, BorderLayout.EAST);
+
+        JPanel eastPanel = new JPanel(new GridBagLayout());
+        eastPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
+        eastPanel.add(controlsPanel);
+
+        add(eastPanel, BorderLayout.EAST);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton backButton = new JButton("Back to Dashboard");
+        bottomPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
+        JButton backButton = ViewUtilities.createStyledButton("Back to Dashboard");
         backButton.addActionListener(e -> gui.showPanel(Gui.USER_PANEL));
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -60,7 +69,6 @@ public class ReservationPanel extends JPanel implements Observer {
         if (controller != null && controller.getCurrentUser() != null) {
             reservationTableModel.setReservations(controller.getUserReservations());
         } else {
-            // Clear the table if no user is logged in
             reservationTableModel.setReservations(java.util.List.of());
         }
     }

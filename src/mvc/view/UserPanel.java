@@ -3,43 +3,42 @@ package mvc.view;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * The user control panel.
- * Provides standard users with options to view voyages and manage their reservations.
- */
 public class UserPanel extends JPanel {
 
-    private Gui gui;
+    private final Gui gui;
 
-    /**
-     * Constructor for the UserPanel.
-     * @param gui The main GUI controller.
-     */
     public UserPanel(Gui gui) {
         this.gui = gui;
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(20, 20));
+        setBackground(ViewUtilities.BACKGROUND_COLOR);
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel titleLabel = new JLabel("User Dashboard", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, BorderLayout.NORTH);
+        add(ViewUtilities.createTitleLabel("User Dashboard"), BorderLayout.NORTH);
 
-        JPanel userFunctions = new JPanel(new GridLayout(2, 1, 10, 10));
-        userFunctions.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel userFunctions = new JPanel(new GridLayout(0, 1, 10, 10));
+        userFunctions.setBackground(ViewUtilities.BACKGROUND_COLOR);
 
-        JButton listVoyagesButton = new JButton("List & Query Voyages");
-        listVoyagesButton.addActionListener(e -> gui.getController().userListQueryVoyages());
+        JButton listSchedulesButton = ViewUtilities.createStyledButton("List & Query Schedules");
+        listSchedulesButton.addActionListener(e -> gui.getController().userListQuerySchedules());
 
-        JButton myReservationsButton = new JButton("Create/Cancel My Reservations");
+        JButton myReservationsButton = ViewUtilities.createStyledButton("Cancel My Reservations");
         myReservationsButton.addActionListener(e -> gui.getController().userCreateCancelReservations());
 
-        userFunctions.add(listVoyagesButton);
+        userFunctions.add(listSchedulesButton);
         userFunctions.add(myReservationsButton);
-        add(userFunctions, BorderLayout.CENTER);
 
-        JButton logoutButton = new JButton("Logout");
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
+        centerPanel.add(userFunctions);
+
+        add(centerPanel, BorderLayout.CENTER);
+
+        JButton logoutButton = ViewUtilities.createStyledButton("Logout");
+        logoutButton.setBackground(new Color(0xEF4444)); // A red color for logout
         logoutButton.addActionListener(e -> gui.getController().logOut());
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
         bottomPanel.add(logoutButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }

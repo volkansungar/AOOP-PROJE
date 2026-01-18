@@ -23,21 +23,26 @@ public class ScheduleListPanel extends JPanel implements Observer {
         this.scheduleTableModel = new ScheduleTableModel();
 
         setLayout(new BorderLayout(10, 10));
+        setBackground(ViewUtilities.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel titleLabel = new JLabel("Available Schedules", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, BorderLayout.NORTH);
+        add(ViewUtilities.createTitleLabel("Available Schedules"), BorderLayout.NORTH);
 
         scheduleTable = new JTable(scheduleTableModel);
+        scheduleTable.setFont(ViewUtilities.MAIN_FONT);
+        scheduleTable.getTableHeader().setFont(ViewUtilities.BOLD_FONT);
         scheduleTable.getColumnModel().getColumn(6).setCellRenderer(new AvailabilityRenderer());
-        scheduleTable.setRowHeight(25);
+        scheduleTable.setRowHeight(30);
+        scheduleTable.setGridColor(ViewUtilities.BORDER_COLOR);
+        scheduleTable.setShowGrid(true);
 
         add(new JScrollPane(scheduleTable), BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
 
-        selectSeatButton = new JButton("Select Seat");
+        selectSeatButton = ViewUtilities.createStyledButton("Select Seat");
+        selectSeatButton.setBackground(ViewUtilities.SECONDARY_COLOR);
         selectSeatButton.addActionListener(e -> {
             int selectedRow = scheduleTable.getSelectedRow();
             if (selectedRow >= 0) {
@@ -56,7 +61,7 @@ public class ScheduleListPanel extends JPanel implements Observer {
             }
         });
 
-        JButton backButton = new JButton("Back");
+        JButton backButton = ViewUtilities.createStyledButton("Back");
         backButton.addActionListener(e -> {
             if (previousPanel != null) {
                 gui.showPanel(previousPanel);

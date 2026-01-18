@@ -1,4 +1,6 @@
 package mvc.view;
+
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import mvc.controller.Controller;
 import javax.swing.*;
 import java.awt.*;
@@ -28,13 +30,16 @@ public class Gui {
     public static final String RESERVATION_PANEL = "ReservationPanel";
 
     public Gui() {
+        FlatIntelliJLaf.setup(); // Apply FlatLaf look and feel
         frame = new JFrame("Online Reservation System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setMinimumSize(new Dimension(800, 600));
         frame.setLocationRelativeTo(null);
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+        mainPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
+
 
         frame.getContentPane().add(mainPanel);
     }
@@ -95,6 +100,7 @@ public class Gui {
     }
 
     public void showFrame() {
+        frame.pack();
         frame.setVisible(true);
     }
 

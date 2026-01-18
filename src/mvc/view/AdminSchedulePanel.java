@@ -5,14 +5,10 @@ import mvc.model.ScheduleTableModel;
 import mvc.patterns.Observer;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Collections;
 
-/**
- * A dedicated panel for administrators to add or delete voyages.
- * Contains forms for input and a table to display existing voyages.
- */
 public class AdminSchedulePanel extends JPanel implements Observer {
 
     private final Gui gui;
@@ -23,99 +19,71 @@ public class AdminSchedulePanel extends JPanel implements Observer {
     private final JTextField capacityField;
     private final JComboBox<String> scheduleTypeComboBox;
 
-    // It's better to use a JTable with its model for dynamic data.
     private final ScheduleTableModel scheduleTableModel;
     private final JTable scheduleTable;
 
-
-    /**
-     * Constructor for the AdminVoyagePanel.
-     * @param gui The main GUI controller.
-     */
     public AdminSchedulePanel(Gui gui) {
         this.gui = gui;
-
-        // Initialize the model that holds the schedule data
         this.scheduleTableModel = new ScheduleTableModel();
-        // The View (this panel) registers itself as an Observer of the Model.
-        // The Controller now manages adding the AdminSchedulePanel as an observer
-        // to the ScheduleManager (Model) when the app starts.
 
         setLayout(new BorderLayout(10, 10));
+        setBackground(ViewUtilities.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Title
-        JLabel titleLabel = new JLabel("Voyage Management", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        add(titleLabel, BorderLayout.NORTH);
+        add(ViewUtilities.createTitleLabel("Voyage Management"), BorderLayout.NORTH);
 
-        // A JTable is much better for displaying tabular data than a JTextArea.
-        // It works directly with a TableModel.
         scheduleTable = new JTable(scheduleTableModel);
+        scheduleTable.setFont(ViewUtilities.MAIN_FONT);
+        scheduleTable.getTableHeader().setFont(ViewUtilities.BOLD_FONT);
         JScrollPane scrollPane = new JScrollPane(scheduleTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel for the "Add Voyage" form and other controls
         JPanel controlsPanel = new JPanel(new GridBagLayout());
+        controlsPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
+        controlsPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(ViewUtilities.BORDER_COLOR),
+                "Add/Delete Schedule",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                ViewUtilities.BOLD_FONT,
+                ViewUtilities.FOREGROUND_COLOR
+        ));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Schedule Type Dropdown
         gbc.gridx = 0;
         gbc.gridy = 0;
-        controlsPanel.add(new JLabel("Schedule Type:"), gbc);
+        controlsPanel.add(ViewUtilities.createLabel("Schedule Type:"), gbc);
         gbc.gridx = 1;
         scheduleTypeComboBox = new JComboBox<>(new String[]{"Plane", "Bus"});
+        scheduleTypeComboBox.setFont(ViewUtilities.MAIN_FONT);
         controlsPanel.add(scheduleTypeComboBox, gbc);
 
-        // Schedule Name Field
         gbc.gridx = 0;
         gbc.gridy++;
-        controlsPanel.add(new JLabel("Schedule Name:"), gbc);
+        controlsPanel.add(ViewUtilities.createLabel("Schedule Name:"), gbc);
         gbc.gridx = 1;
         scheduleNameField = new JTextField(20);
+        scheduleNameField.setFont(ViewUtilities.MAIN_FONT);
         controlsPanel.add(scheduleNameField, gbc);
 
-        // Source Field
-        gbc.gridx = 0;
-        gbc.gridy++;
-        controlsPanel.add(new JLabel("Source:"), gbc);
-        gbc.gridx = 1;
-        sourceField = new JTextField(20);
-        controlsPanel.add(sourceField, gbc);
+        gbc.gridx = 0; gbc.gridy++; controlsPanel.add(ViewUtilities.createLabel("Source:"), gbc);
+        gbc.gridx = 1; sourceField = new JTextField(20); sourceField.setFont(ViewUtilities.MAIN_FONT); controlsPanel.add(sourceField, gbc);
+        gbc.gridx = 0; gbc.gridy++; controlsPanel.add(ViewUtilities.createLabel("Destination:"), gbc);
+        gbc.gridx = 1; destinationField = new JTextField(20); destinationField.setFont(ViewUtilities.MAIN_FONT); controlsPanel.add(destinationField, gbc);
+        gbc.gridx = 0; gbc.gridy++; controlsPanel.add(ViewUtilities.createLabel("Date (DD-MM-YYYY):"), gbc);
+        gbc.gridx = 1; dateField = new JTextField(20); dateField.setFont(ViewUtilities.MAIN_FONT); controlsPanel.add(dateField, gbc);
+        gbc.gridx = 0; gbc.gridy++; controlsPanel.add(ViewUtilities.createLabel("Capacity:"), gbc);
+        gbc.gridx = 1; capacityField = new JTextField(20); capacityField.setFont(ViewUtilities.MAIN_FONT); controlsPanel.add(capacityField, gbc);
 
-        // Destination Field
-        gbc.gridx = 0;
-        gbc.gridy++;
-        controlsPanel.add(new JLabel("Destination:"), gbc);
-        gbc.gridx = 1;
-        destinationField = new JTextField(20);
-        controlsPanel.add(destinationField, gbc);
 
-        // Date Field
-        gbc.gridx = 0;
-        gbc.gridy++;
-        controlsPanel.add(new JLabel("Date (DD-MM-YYYY):"), gbc);
-        gbc.gridx = 1;
-        dateField = new JTextField(20);
-        controlsPanel.add(dateField, gbc);
-
-        // Capacity Field
-        gbc.gridx = 0;
-        gbc.gridy++;
-        controlsPanel.add(new JLabel("Capacity:"), gbc);
-        gbc.gridx = 1;
-        capacityField = new JTextField(20);
-        controlsPanel.add(capacityField, gbc);
-
-        // Add Schedule Button
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
-        JButton addScheduleButton = new JButton("Add Schedule");
+        JButton addScheduleButton = ViewUtilities.createStyledButton("Add Schedule");
+        addScheduleButton.setBackground(ViewUtilities.SECONDARY_COLOR);
 
-        // Implemented ActionListener to add a new voyage
         ActionListener addScheduleAction = e -> {
             String scheduleType = (String) scheduleTypeComboBox.getSelectedItem();
             String scheduleName = scheduleNameField.getText();
@@ -144,50 +112,38 @@ public class AdminSchedulePanel extends JPanel implements Observer {
         addScheduleButton.addActionListener(addScheduleAction);
         controlsPanel.add(addScheduleButton, gbc);
 
-        // Delete Schedule Button
         gbc.gridy++;
-        JButton deleteVoyageButton = new JButton("Delete Selected Voyage");
-        // ActionListener to delete the selected voyage from the JTable
-        deleteVoyageButton.addActionListener(e -> {
+        JButton deleteScheduleButton = ViewUtilities.createStyledButton("Delete Selected Schedule");
+        deleteScheduleButton.setBackground(new Color(0xEF4444));
+        deleteScheduleButton.addActionListener(e -> {
             int selectedRow = scheduleTable.getSelectedRow();
             if (selectedRow >= 0) {
-                // Get the ID from the ScheduleTableModel using the selected row index
                 String scheduleIdToDelete = scheduleTableModel.getScheduleIdAt(selectedRow);
                 Controller controller = gui.getController();
                 if (controller != null && scheduleIdToDelete != null) {
                     controller.deleteSchedule(scheduleIdToDelete);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Please select a voyage to delete.", "No Voyage Selected", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select a schedule to delete.", "No Schedule Selected", JOptionPane.WARNING_MESSAGE);
             }
         });
-        controlsPanel.add(deleteVoyageButton, gbc);
+        controlsPanel.add(deleteScheduleButton, gbc);
 
         add(controlsPanel, BorderLayout.EAST);
 
-        // Bottom panel for navigation
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton backButton = new JButton("Back to Admin Panel");
+        bottomPanel.setBackground(ViewUtilities.BACKGROUND_COLOR);
+        JButton backButton = ViewUtilities.createStyledButton("Back to Admin Panel");
         backButton.addActionListener(e -> gui.showPanel(Gui.ADMIN_PANEL));
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * This method is called by the Observable (the Model) when data has changed.
-     * Its job is to refresh the view to reflect the latest state of the model.
-     */
     @Override
     public void update() {
         Controller controller = gui.getController();
         if (controller != null) {
-            // Get the updated list from the controller and set it on the table model.
-            // The setSchedules method in the model will call fireTableDataChanged()
-            // which tells the JTable to refresh.
             scheduleTableModel.setSchedules(controller.getSchedules());
         }
-
-        // The JTable component listening to this model will automatically repaint.
-        System.out.println("View updated with latest schedule data.");
     }
 }
